@@ -97,8 +97,10 @@ namespace KerbalJointReinforcement
         private void OnVesselOffRails(Vessel v)
         {
             if ((object)v == null || v.isEVA)
-                return; 
-            
+                return;
+
+            bool vesselHasLaunchClamps = false;
+
             RunVesselJointUpdateFunction(v);
             if (!vesselOffRails.Contains(v) && v.precalc.isEasingGravity)
             {
@@ -116,6 +118,7 @@ namespace KerbalJointReinforcement
 
                     if (p.Modules.Contains<LaunchClamp>())
                     {
+                        vesselHasLaunchClamps = true;
                         foreach (Joint j in partJoints)
                             if (j.connectedBody == null)
                             {
@@ -126,6 +129,27 @@ namespace KerbalJointReinforcement
                             }
                     }
                 }
+            }
+            else
+            {
+                for (int i = 0; i<v.Parts.Count; ++i)
+                {
+                    Part p = v.Parts[i];
+
+                    if (p.Modules.Contains<LaunchClamp>())
+                    {
+                        vesselHasLaunchClamps = true;
+                    }
+                }
+            }
+            // if we had launch clamps and our situation is not PRELAUNCH then assume some physics issue has bounced us into landed or flying situation.
+            if (vesselHasLaunchClamps && v.situation != Vessel.Situations.PRELAUNCH)
+            {
+                Debug.Log("KJR: Vessel has launch clamps and is not PRELAUNCH: Moving back to PRELAUNCH");
+                v.situation = Vessel.Situations.PRELAUNCH;
+                v.skipGroundPositioning = false;
+                v.launchTime = 0;
+                v.missionTime = 0;
             }
         }
 
