@@ -35,6 +35,7 @@ namespace KerbalJointReinforcement
         public static bool multiPartAttachNodeReinforcement = true;
         public static bool reinforceDecouplersFurther = false;
         public static bool reinforceLaunchClampsFurther = false;
+        public static bool clampJointHasInfiniteStrength = false;
         public static bool useVolumeNotArea = false;
 
         public static float angularDriveSpring = 0;
@@ -238,7 +239,9 @@ namespace KerbalJointReinforcement
         public static void AddLaunchClampReinforcementModule(Part p)
         {
             p.AddModule("KJRLaunchClampReinforcementModule");
-            (p.Modules["KJRLaunchClampReinforcementModule"] as KJRLaunchClampReinforcementModule).OnPartUnpack();
+            var pm = p.Modules["KJRLaunchClampReinforcementModule"] as KJRLaunchClampReinforcementModule;
+            pm.clampJointHasInfiniteStrength = clampJointHasInfiniteStrength;
+            pm.OnPartUnpack();
             if (debug)
                 Debug.Log("Added KJRLaunchClampReinforcementModule to part " + p.partInfo.title);
         }
@@ -252,6 +255,7 @@ namespace KerbalJointReinforcement
             multiPartAttachNodeReinforcement = config.GetValue<bool>("multiPartAttachNodeReinforcement", true);
             reinforceDecouplersFurther = config.GetValue<bool>("reinforceDecouplersFurther", true);
             reinforceLaunchClampsFurther = config.GetValue<bool>("reinforceLaunchClampsFurther", true);
+            clampJointHasInfiniteStrength = config.GetValue<bool>("clampJointHasInfiniteStrength", true);
             useVolumeNotArea = config.GetValue<bool>("useVolumeNotArea", true);
 
             angularDriveSpring = config.GetValue<float>("angularDriveSpring");
@@ -316,6 +320,7 @@ namespace KerbalJointReinforcement
                 debugString.AppendLine("Reinforce Attach Nodes: " + reinforceAttachNodes);
                 debugString.AppendLine("Reinforce Decouplers Further: " + reinforceDecouplersFurther);
                 debugString.AppendLine("Reinforce Launch Clamps Further: " + reinforceLaunchClampsFurther);
+                debugString.AppendLine("Clamp Joint Has Infinite Strength: " + clampJointHasInfiniteStrength);
                 debugString.AppendLine("Use Volume For Calculations, Not Area: " + useVolumeNotArea);
 
                 debugString.AppendLine("\n\rMass For Joint Adjustment: " + massForAdjustment);

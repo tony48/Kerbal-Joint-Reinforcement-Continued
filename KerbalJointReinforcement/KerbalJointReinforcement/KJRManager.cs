@@ -209,7 +209,7 @@ namespace KerbalJointReinforcement
                         continue;
                     }
 
-                if (KJRJointUtils.reinforceLaunchClampsFurther)
+                if (KJRJointUtils.reinforceLaunchClampsFurther || KJRJointUtils.clampJointHasInfiniteStrength)
                     if (p.Modules.Contains<LaunchClamp>() && p.parent != null)
                     {
                         p.breakingForce = Mathf.Infinity;
